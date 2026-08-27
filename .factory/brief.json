@@ -1,0 +1,11 @@
+{
+  "slug": "android-backup-coverage",
+  "title": "Android Backup Coverage",
+  "territory": "utilities",
+  "user": "Android owners who self-host or use multiple backup destinations and need proof that new photos and selected folders actually reached a second copy.",
+  "smallest_useful_product": "An Android app that inventories configured source folders, computes local file manifests, reads a user-selected destination manifest/share, highlights missing/late files, and schedules a visible verification reminder.",
+  "success_measure": "In a 60-day pilot, 95% of newly captured photos are marked verified within the user’s chosen window and every simulated missing upload is surfaced within 24 hours.",
+  "monetization": "one-time",
+  "constraints": "Respect Android scoped-storage permissions and battery limits; do not claim to back up app-private data; manifests must be encrypted or local; make destination adapters opt-in.",
+  "state": "RESEARCHED"
+}
