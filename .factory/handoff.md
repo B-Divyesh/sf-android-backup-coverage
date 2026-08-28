@@ -1,8 +1,8 @@
-# Android Backup Coverage — repair handoff
+# Android Backup Coverage — verification handoff
 
 ## Release status
 
-**PASS — repair commit `124d11f` is pushed to `main` and deployed to <https://android-backup-coverage.sociobot.in/>.** It repairs every release blocker in the independent report for candidate `16c3ddc49cda76cf09a2746947175848cfd3109f`.
+**PASS — independently verified candidate `8a1c0e27cee75948f8755042c3074e723464ddc8` is deployed at <https://android-backup-coverage.sociobot.in/>.** Complete fresh evidence is in [.factory/verification-2.md](verification-2.md); it supersedes the earlier failure report.
 
 ## What changed
 
@@ -21,18 +21,15 @@ npm run build
 npx cap sync android
 ```
 
-Completed on 2026-08-28:
+Independent verification completed on 2026-08-28:
 
-- Fresh `npm ci`: 150 packages installed; `npm audit` reported 0 vulnerabilities.
-- With `dist/` deliberately moved aside, `npm test` passed: 8 Vitest tests and 14 Playwright tests (desktop Chromium and Pixel 5 / 390 px). This directly closes the clean-checkout blocker.
-- `npm run build` passed TypeScript checking and produced `dist/`: app JS 14.65 KB, CSS 15.32 KB, and the fingerprinted WebP hero 56.80 KB. Initial JS remains below the 200 KB budget.
-- `npx cap sync android` passed. `./android/gradlew -p android test` cannot run in this static-worker image because no JDK/`JAVA_HOME` is installed; no APK is in scope for this static deployment.
-- Local Playwright covers source/destination comparison, filtering, 390 px overflow, service-worker-controlled offline reload, keyboard skip link and Escape/focus return from Pro, and axe serious/critical findings.
-- Live post-deploy check (`/opt/fleet/lib/verify-url.sh`) returned HTTP 200 in 697 ms with title, `lang`, one `h1`, `main`, image alt text, labelled buttons, and no browser errors.
-- Live Playwright/axe at 1440 px and 390 px: 0 serious/critical violations, 0 px horizontal overflow, no console/page errors; after one online load, offline reload reached `data-ready=true` and showed the offline notice. First-load requests were only to `https://android-backup-coverage.sociobot.in`.
-- Live headers confirm `no-cache` on HTML and `sw.js`, immutable one-year caching on `/assets/app-DgoAUnXe.js`, `application/manifest+json` for `/manifest.webmanifest`, plus CSP, `X-Frame-Options: DENY`, Permissions-Policy, nosniff, and strict referrer policy.
-- Live artifact identities match `dist/`: `index.html` `ac3efcfc…8803ce3`, app JS `4addc5a2…7823bb40`, app CSS `17b8d01a…ac5b730`, and `sw.js` `8b5a31b8…8305e9cbf`.
-- Lighthouse 12.8.2 report: Performance 100, Accessibility 100, Best Practices 100, SEO 100; FCP 1.2 s, LCP 1.5 s, TBT 10 ms, CLS 0.023. The JSON report was written successfully, then the supplied Chromium tab emitted a screenshot/BFCache crash during final teardown; treat the scores as report evidence rather than a fully clean Lighthouse process exit.
+- Fresh detached checkout: `npm ci` installed 150 packages; audit reported 0 vulnerabilities. Exact `npm test` passed 8 Vitest and 14 Playwright tests; `npm run build` passed TypeScript and Vite.
+- Production output stays within budget: JS 14.65 KB (5.53 KB gzip), CSS 15.32 KB (4.63 KB gzip), hero 56.80 KB; no lint script exists.
+- Live independent browser QA covered source/destination selection, preview/filtering, invalid-manifest recovery, valid-manifest receipt, reminder, desktop and 390 px mobile, keyboard and focus, reduced motion, console/page errors, and axe. Result: 0 serious/critical axe findings, 0 console/page errors, and 0 px mobile overflow.
+- The PWA passed an online-to-offline controlled reload and receipt creation. A controlled changed-worker test showed the update toast. First-run browser requests remained same-origin only.
+- Live headers and cache policy are correct: no-cache HTML/service worker, immutable hashed assets, manifest MIME type, CSP, HSTS, clickjacking protection, Permissions-Policy, nosniff, and strict referrer policy. Live `index.html`, JS, and CSS SHA-256 values match this candidate build.
+- Lighthouse 12.8.2 report: Performance 97, Accessibility 100, Best Practices 100, SEO 100; FCP 1.2 s, LCP 1.5 s, TBT 200 ms, CLS 0.023. Its Chromium tab crashed during final screenshot/BFCache collection after writing the report.
+- `npx cap sync android` passed. Native Gradle tests could not start in this worker because it has no JDK/`JAVA_HOME`; this static-PWA deployment has no APK to verify.
 
 Deployment used `/opt/fleet/lib/deploy-static.sh android-backup-coverage dist` (Azure Static Web Apps deployment `028cfa9f-b621-486c-a2e1-ef909be6a532`).
 
