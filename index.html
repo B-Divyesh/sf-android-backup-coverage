@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#F7F8F5" />
+    <meta name="description" content="Check whether selected Android folders really reached a second backup destination. Local, private, and destination-neutral." />
+    <link rel="canonical" href="https://android-backup-coverage.sociobot.in/" />
+    <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <title>Android Backup Coverage — know what reached a second copy</title>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Android Backup Coverage home">
+        <svg aria-hidden="true" viewBox="0 0 36 36" width="36" height="36"><path d="M6 11c0-3 2-5 5-5h6v24h-6c-3 0-5-2-5-5V11Z"/><path d="M19 6h6c3 0 5 2 5 5v14c0 3-2 5-5 5h-6V6Z"/><path class="brand-gap" d="M16 16h4v4h-4z"/></svg>
+        <span>Backup Coverage</span>
+      </a>
+      <nav aria-label="Primary navigation">
+        <a href="#verify">Verify</a>
+        <button class="text-button" id="history-open" type="button">History</button>
+        <button class="text-button" id="pro-open" type="button">Pro</button>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow"><span aria-hidden="true">●</span> Local verification for Android</p>
+          <h1 id="hero-title">Know your photos made it.</h1>
+          <p class="lede">Compare a phone folder with any second copy. Get a plain receipt for what arrived, what changed, and what is still missing—without giving us your files.</p>
+          <div class="hero-actions">
+            <a class="button primary" href="#verify">Check coverage</a>
+            <button class="button secondary" id="load-example" type="button">Preview a receipt</button>
+          </div>
+          <p class="privacy-note"><svg aria-hidden="true" viewBox="0 0 20 20"><path d="M5 9V7a5 5 0 0 1 10 0v2m-8 0h6v7H7V9Z"/></svg> File names and manifests stay on this device.</p>
+        </div>
+        <figure class="hero-figure">
+          <img src="/assets/coverage-ceramic.webp" width="1152" height="768" alt="Ceramic phone bridge carrying file tiles between two archive vessels, with one ochre tile separated as a backup gap" fetchpriority="high" decoding="async" />
+          <figcaption>One separated tile is all it takes to break a backup promise.</figcaption>
+        </figure>
+      </section>
+
+      <section class="verifier" id="verify" aria-labelledby="verify-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Coverage check</p>
+            <h2 id="verify-title">Make a fresh receipt</h2>
+          </div>
+          <p>We compare relative paths and file sizes. Files are read only long enough to create a local manifest; contents are never uploaded.</p>
+        </div>
+
+        <ol class="setup-steps" aria-label="Verification setup">
+          <li class="setup-step" id="source-step">
+            <span class="step-number" aria-hidden="true">1</span>
+            <div>
+              <h3>Choose the source folder</h3>
+              <p>Select DCIM, Pictures, or another folder Android allows this browser to read.</p>
+              <div class="step-actions">
+                <button class="button primary" id="source-pick" type="button">Choose source folder</button>
+                <label class="button secondary file-label" for="source-files">Choose files instead</label>
+                <input id="source-files" class="visually-hidden" type="file" multiple webkitdirectory aria-label="Choose source folder files" />
+              </div>
+              <p class="selection" id="source-selection" aria-live="polite">No source selected</p>
+            </div>
+          </li>
+          <li class="setup-step" id="destination-step">
+            <span class="step-number" aria-hidden="true">2</span>
+            <div>
+              <h3>Choose proof of the second copy</h3>
+              <p>Select a mounted destination folder, or import a manifest exported from the backup destination.</p>
+              <div class="step-actions">
+                <button class="button primary" id="destination-pick" type="button">Choose destination folder</button>
+                <label class="button secondary file-label" for="destination-files">Choose files instead</label>
+                <label class="button quiet file-label" for="manifest-file">Import manifest</label>
+                <input id="destination-files" class="visually-hidden" type="file" multiple webkitdirectory aria-label="Choose destination folder files" />
+                <input id="manifest-file" class="visually-hidden" type="file" accept="application/json,.json" aria-label="Import destination manifest" />
+              </div>
+              <p class="selection" id="destination-selection" aria-live="polite">No destination selected</p>
+            </div>
+          </li>
+          <li class="setup-step review-step" id="review-step">
+            <span class="step-number" aria-hidden="true">3</span>
+            <div>
+              <h3>Set the expected arrival window</h3>
+              <p>Anything still absent after this window is marked late.</p>
+              <label class="field-label" for="arrival-window">Verification window</label>
+              <select id="arrival-window">
+                <option value="24">Within 24 hours</option>
+                <option value="48">Within 48 hours</option>
+                <option value="168">Within 7 days</option>
+              </select>
+              <label class="field-label" for="reminder-interval">Visible check reminder</label>
+              <select id="reminder-interval">
+                <option value="1">Every day</option>
+                <option value="3">Every 3 days</option>
+                <option value="7">Every week</option>
+                <option value="0">Off</option>
+              </select>
+              <p class="reminder-status" id="reminder-status" role="status">Your next check is scheduled after the first receipt.</p>
+              <button class="button primary verify-button" id="run-check" type="button" disabled>Compare both copies</button>
+            </div>
+          </li>
+        </ol>
+        <div class="error-banner" id="error-banner" role="alert" hidden></div>
+        <div class="offline-banner" id="offline-banner" role="status" hidden><strong>You’re offline.</strong> Folder checks and saved receipts still work. License verification will resume later.</div>
+      </section>
+
+      <section class="receipt" id="receipt" aria-labelledby="receipt-title" hidden>
+        <div class="receipt-head">
+          <div>
+            <p class="eyebrow">Latest receipt</p>
+            <h2 id="receipt-title">Coverage result</h2>
+            <p id="receipt-stamp"></p>
+          </div>
+          <div class="coverage-score" aria-live="polite"><strong id="coverage-percent">—</strong><span>covered</span></div>
+        </div>
+        <div class="coverage-track" aria-hidden="true"><span id="coverage-fill"></span></div>
+        <p class="receipt-summary" id="receipt-summary"></p>
+        <dl class="metric-row">
+          <div><dt>Verified</dt><dd class="success" id="metric-verified">0</dd></div>
+          <div><dt>Waiting</dt><dd class="warning" id="metric-waiting">0</dd></div>
+          <div><dt>Late</dt><dd class="danger" id="metric-late">0</dd></div>
+          <div><dt>Changed</dt><dd id="metric-changed">0</dd></div>
+        </dl>
+        <div class="receipt-toolbar">
+          <div class="filters" role="group" aria-label="Filter result files">
+            <button class="filter active" type="button" data-filter="all" aria-pressed="true">All</button>
+            <button class="filter" type="button" data-filter="attention" aria-pressed="false">Needs attention</button>
+            <button class="filter" type="button" data-filter="verified" aria-pressed="false">Verified</button>
+          </div>
+          <div class="export-actions">
+            <button class="button quiet" id="export-json" type="button">Export JSON</button>
+            <button class="button quiet" id="export-csv" type="button">Export CSV</button>
+          </div>
+        </div>
+        <div class="result-table-wrap">
+          <table>
+            <caption class="visually-hidden">File-by-file backup comparison</caption>
+            <thead><tr><th scope="col">File</th><th scope="col">Size</th><th scope="col">Captured</th><th scope="col">Status</th></tr></thead>
+            <tbody id="result-rows"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="assurance" aria-labelledby="assurance-title">
+        <p class="eyebrow">What this proves</p>
+        <h2 id="assurance-title">A coverage layer, not another cloud.</h2>
+        <div class="assurance-grid">
+          <div><span aria-hidden="true">01</span><h3>Destination-neutral</h3><p>Compare local folders, USB storage, NAS mounts, and portable manifests from the tools you already use.</p></div>
+          <div><span aria-hidden="true">02</span><h3>Private by construction</h3><p>Checks run in your browser. We have no account database and receive no file names, metadata, or manifests.</p></div>
+          <div><span aria-hidden="true">03</span><h3>Honest limits</h3><p>This verifies visible files by path and size. It cannot read app-private data or make a missing backup for you.</p></div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p><strong>Backup Coverage</strong><br />Quiet proof for your second copy.</p>
+      <div><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><button class="text-button" id="reset-data" type="button">Erase local data</button></div>
+      <p class="generation-note">Ceramic illustration generated for this product with the factory image model.</p>
+    </footer>
+
+    <dialog id="history-dialog" aria-labelledby="history-title">
+      <div class="dialog-head"><h2 id="history-title">Verification history</h2><button class="icon-button dialog-close" type="button" aria-label="Close history">×</button></div>
+      <div id="history-list"></div>
+    </dialog>
+
+    <dialog id="pro-dialog" aria-labelledby="pro-title">
+      <div class="dialog-head"><h2 id="pro-title">Backup Coverage Pro</h2><button class="icon-button dialog-close" type="button" aria-label="Close Pro details">×</button></div>
+      <p class="price"><strong>$12</strong> one time</p>
+      <p>Keep unlimited verification history and compare changing folders over time. Current checks, reminders, accessibility, and every export stay free.</p>
+      <a class="button primary full" id="buy-link" href="https://api.sociobot.in/api/v1/products/android-backup-coverage/checkout">Buy Pro securely</a>
+      <hr />
+      <form id="license-form">
+        <label class="field-label" for="license-input">Already bought it? Paste your license</label>
+        <div class="license-row"><input id="license-input" type="text" autocomplete="off" spellcheck="false" required /><button class="button secondary" type="submit">Restore purchase</button></div>
+        <p id="license-status" role="status"></p>
+      </form>
+      <p class="legal-small">Sociobot/Dodo is the merchant of record and handles refunds. A refunded license is automatically revoked. <a href="/privacy/">Privacy</a> · <a href="/terms/">Terms</a></p>
+    </dialog>
+
+    <div class="toast" id="update-toast" role="status" hidden>Update available. <button type="button" id="apply-update">Reload now</button></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

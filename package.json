@@ -1,0 +1,31 @@
+{
+  "name": "android-backup-coverage",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "vitest run && playwright test",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test"
+  },
+  "dependencies": {
+    "@fontsource-variable/fraunces": "5.2.6",
+    "@fontsource/atkinson-hyperlegible-next": "5.2.6",
+    "@capacitor/core": "7.6.8"
+  },
+  "devDependencies": {
+    "@capacitor/android": "7.6.8",
+    "@capacitor/cli": "7.6.8",
+    "@axe-core/playwright": "4.10.2",
+    "@playwright/test": "1.58.2",
+    "typescript": "5.9.2",
+    "vite": "7.3.6",
+    "vitest": "3.2.7"
+  },
+  "overrides": {
+    "playwright-core": "1.58.2"
+  }
+}
