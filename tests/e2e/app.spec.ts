@@ -15,6 +15,36 @@ test('loads the complete checker with no serious accessibility issues', async ({
   expect(errors).toEqual([]);
 });
 
+test('serves fingerprinted app assets and a versioned service worker', async ({ page }) => {
+  await page.goto('/');
+  const script = await page.locator('script[type="module"]').getAttribute('src');
+  const stylesheet = await page.locator('link[rel="stylesheet"]').getAttribute('href');
+  const hero = await page.locator('.hero-figure img').getAttribute('src');
+  expect(script).toMatch(/^\/assets\/app-[A-Za-z0-9_-]{8}\.js$/);
+  expect(stylesheet).toMatch(/^\/assets\/app-[A-Za-z0-9_-]{8}\.css$/);
+  expect(hero).toMatch(/^\/assets\/coverage-ceramic-[A-Za-z0-9_-]{8}\.webp$/);
+
+  const worker = await page.request.get('/sw.js');
+  expect(worker.ok()).toBeTruthy();
+  expect(await worker.text()).toContain('coverage-');
+});
+
+test('keeps the skip link and Pro dialog fully keyboard-operable', async ({ page }) => {
+  await page.goto('/');
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('link', { name: 'Skip to main content' })).toBeFocused();
+  await expect(page.getByRole('link', { name: 'Skip to main content' })).toBeVisible();
+  await page.keyboard.press('Enter');
+  await expect(page).toHaveURL(/#main$/);
+
+  await page.getByRole('button', { name: 'Pro', exact: true }).focus();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#pro-dialog')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#pro-dialog')).not.toBeVisible();
+  await expect(page.getByRole('button', { name: 'Pro', exact: true })).toBeFocused();
+});
+
 test('shows a useful receipt and filters attention items', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('body')).toHaveAttribute('data-ready', 'true');

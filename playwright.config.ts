@@ -9,7 +9,9 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
   webServer: {
-    command: 'npm run preview',
+    // A browser test must be runnable from a fresh checkout. `vite preview`
+    // serves an empty shell when dist/ has not already been built.
+    command: 'npm run build && npm run preview',
     port: 4173,
     reuseExistingServer: true,
   },

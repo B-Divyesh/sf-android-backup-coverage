@@ -52,4 +52,4 @@ The hero uses one generated still-life illustration rather than a generic dashbo
 - **Palette words:** warm frost, porcelain white, deep fjord teal, pale ice blue, tiny lichen and ochre accents
 - **Negative list:** no people, no hands, no text, no letters, no numbers, no logos, no brand marks, no watermark, no cables, no clouds, no generic shield/checkmark, no glossy plastic, no neon gradient
 
-Generated with the factory Azure image model (`factory-image`) on 2026-08-27 using `/opt/fleet/lib/gen-image.sh`. The output is original for this product; generated imagery is disclosed in the footer. Source PNG and prompt sidecar live in `assets/src/`; optimized WebP is shipped from `public/assets/`.
+Generated with the factory Azure image model (`factory-image`) on 2026-08-27 using `/opt/fleet/lib/gen-image.sh`. The output is original for this product; generated imagery is disclosed in the footer. Source PNG and prompt sidecar live in `assets/src/`; the optimized WebP in `src/assets/` is emitted with a content fingerprint, making it safe for immutable caching.
