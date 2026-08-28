@@ -1,42 +1,35 @@
-# Review handoff — Android Backup Coverage
-
-## Completed
-
-Performed the requested adversarial first-read review of the deployed product without changing product code. The full report is in [review-1.md](review-1.md).
-
-Committed review artifacts only:
-
-- `.factory/review-1.md`
-- `.factory/handoff.md`
-
-## How verified
-
-- Fresh Chromium contexts at 390 × 844 and 1440 × 900, before scrolling.
-- Checked `/demo`, `?demo=1`, preview persistence after reload, first-run requests, metadata, route responses, link destinations, and Privacy/Terms console output.
-- Ran `npm ci`, `npm test` (8 Vitest + 14 Playwright passing), and `npm run build`.
-- Checked `.factory/claims.json`; it is absent, so there were no listed claim commands to execute.
-
-## Result and remaining work
-
-**FAIL.** Release-blocking findings are: no isolated one-click demo, no claims registry/tests, a 404 checkout link, and no designed HTTP 404 route. Privacy/Terms also violate the deployed CSP through inline styles and lack the shared skeleton. The report contains exact evidence and retest requirements.
-
----
-
-## Historical verification record (superseded by review 1)
+# Repair handoff — Android Backup Coverage
 
 ## Release status
 
-**PASS — independently verified candidate `8a1c0e27cee75948f8755042c3074e723464ddc8` is deployed at <https://android-backup-coverage.sociobot.in/>.** Complete fresh evidence is in [.factory/verification-2.md](verification-2.md); it supersedes the earlier failure report.
+**PASS.** Perfection-loop round 1 is deployed at <https://android-backup-coverage.sociobot.in/>. No blocking finding from `.factory/review-1.md` remains open.
+
+Deployed source commit: `0c61da94c9f1f34cb8508b97b60f2a6220276e27`  
+Azure Static Web Apps deployment: `62accaf8-f667-4e57-aef9-f4c728e725ff`  
+Default host: `gentle-pebble-0c74de60f.7.azurestaticapps.net`
 
 ## What changed
 
-- `npm test` is self-contained: Playwright builds before starting `vite preview`, so a fresh checkout does not need a pre-existing `dist/` directory.
-- Vite emits content-fingerprinted app JavaScript, CSS, and hero artwork. The generated service worker carries a per-build cache version, discovers emitted asset paths from the built HTML, and preserves offline/update behavior.
-- `public/staticwebapp.config.json` is the Azure Static Web Apps deployment contract: fingerprinted `/assets/*` receive `Cache-Control: public, max-age=31536000, immutable`; HTML and `sw.js` receive `no-cache`; the manifest is `application/manifest+json`.
-- The deployment contract supplies same-origin CSP (including the optional Sociobot license-verification endpoint), `frame-ancestors 'none'`, `X-Frame-Options: DENY`, Permissions-Policy, nosniff, and strict referrer policy.
-- Regression coverage checks the static-host policy contract, emitted hashed JS/CSS/image URLs, service-worker output, and keyboard skip-link/Pro-dialog behavior. Existing comparison, mobile, offline, console, and axe checks remain.
+- Rewrote the campaign first screen around “Know every photo and video made it.” It names Android backup users and presents the sample action immediately.
+- Added a compact three-step story using Lucide icons: phone folder → local comparison → backup receipt.
+- Added an above-the-fold 50% sample receipt with verified, missing, and changed counts, plus a second sample-data action.
+- Preserved the glacial ceramic identity and original generated artwork. Added only a derived 1200×630 social card and a 180 px touch icon.
+- Added `/demo` and `?demo=1` entry points with a persistent demo banner, reset control, and start-for-real control.
+- Isolated demo state in `demo:backup-coverage-local`. Leaving demo mode clears that state and never reads or writes `backup-coverage-local`.
+- Added `.factory/claims.json` with eleven tagged, observable browser claim tests.
+- Removed the dead checkout, Pro dialog, license requests, caps, and all paid promises. This release is free with no account.
+- Added explicit `/demo` routing and an Azure 404 override. Unknown paths now return the designed 404 document with HTTP 404.
+- Rebuilt Privacy, Terms, offline, and 404 pages with the shared header/footer, legal cross-links, focus styling, and CSP-safe external CSS.
+- Added route titles, descriptions, canonicals, Open Graph and Twitter metadata, social artwork, touch icon, favicon, robots, and sitemap demo entry.
+- Standardized user-facing terms around phone folder, backup copy, backup check, backup receipt, verified, missing, and changed.
+- Added restrained one-time entrance and progress motion. Reduced-motion mode collapses it to an immediate state.
+- Updated the catalog line to: `Verify your Android photos and videos reached a second backup copy.`
 
-## Run and verify
+## Verification evidence
+
+### Full local suite
+
+From `/work/repo`:
 
 ```sh
 npm ci
@@ -45,21 +38,73 @@ npm run build
 npx cap sync android
 ```
 
-Independent verification completed on 2026-08-28:
+Results on 2026-08-28 UTC:
 
-- Fresh detached checkout: `npm ci` installed 150 packages; audit reported 0 vulnerabilities. Exact `npm test` passed 8 Vitest and 14 Playwright tests; `npm run build` passed TypeScript and Vite.
-- Production output stays within budget: JS 14.65 KB (5.53 KB gzip), CSS 15.32 KB (4.63 KB gzip), hero 56.80 KB; no lint script exists.
-- Live independent browser QA covered source/destination selection, preview/filtering, invalid-manifest recovery, valid-manifest receipt, reminder, desktop and 390 px mobile, keyboard and focus, reduced motion, console/page errors, and axe. Result: 0 serious/critical axe findings, 0 console/page errors, and 0 px mobile overflow.
-- The PWA passed an online-to-offline controlled reload and receipt creation. A controlled changed-worker test showed the update toast. First-run browser requests remained same-origin only.
-- Live headers and cache policy are correct: no-cache HTML/service worker, immutable hashed assets, manifest MIME type, CSP, HSTS, clickjacking protection, Permissions-Policy, nosniff, and strict referrer policy. Live `index.html`, JS, and CSS SHA-256 values match this candidate build.
-- Lighthouse 12.8.2 report: Performance 97, Accessibility 100, Best Practices 100, SEO 100; FCP 1.2 s, LCP 1.5 s, TBT 200 ms, CLS 0.023. Its Chromium tab crashed during final screenshot/BFCache collection after writing the report.
-- `npx cap sync android` passed. Native Gradle tests could not start in this worker because it has no JDK/`JAVA_HOME`; this static-PWA deployment has no APK to verify.
+- `npm ci`: 151 packages installed; 0 vulnerabilities.
+- `npm test`: 12 Vitest unit/static/registry checks and 38 Playwright checks passed.
+- Browser matrix: desktop Chromium and Pixel 5 mobile at 390 px.
+- Axe: zero serious or critical findings on `/`, `/demo`, `/privacy/`, `/terms/`, and the 404 page.
+- Dark mode and reduced-motion checks passed.
+- Console/page errors: zero on all public 200 routes.
+- Mobile overflow: 0 px on landing and demo.
+- Offline: `/demo` reloaded under `context.setOffline(true)`, reset its seed, and recreated the 50% receipt.
+- `npm run build`: passed and produced `dist/`.
+- Initial JS: 17.43 KB raw / 6.62 KB gzip.
+- CSS: 19.75 KB raw / 5.48 KB gzip.
+- Hero artwork: 56.80 KB. Social card: 37.11 KB.
+- `npx cap sync android`: passed; web assets and Capacitor configuration copied successfully.
 
-Deployment used `/opt/fleet/lib/deploy-static.sh android-backup-coverage dist` (Azure Static Web Apps deployment `028cfa9f-b621-486c-a2e1-ef909be6a532`).
+### Every claim from a clean clone
 
-## Product scope and known limits
+A fresh `--no-local` clone of commit `0c61da94c9f1f34cb8508b97b60f2a6220276e27` ran the exact command from every `.factory/claims.json` entry. Each command passed in Chromium and Pixel 5:
 
-- The product compares normalized relative paths and byte sizes, not file-content hashes. It does not claim cryptographic integrity or create a backup.
-- Android/browser scoped storage limits what a picker can reveal; app-private data is never read. Visible reminders require opening the app and do not claim background notification delivery.
-- The checked-in Capacitor project remains a wrapper skeleton for this static-PWA work order. A later Android artifact work order needs a JDK, a Storage Access Framework bridge if desired, signing, APK build, and artifact publication.
-- The factory must register the Sociobot billing product before production checkout can complete. No billing credential or third-party tracking is embedded in the app.
+- `@claim:compare-folders` — 2 passed
+- `@claim:complete-receipt` — 2 passed
+- `@claim:receipt-statuses` — 2 passed
+- `@claim:demo-isolation` — 2 passed
+- `@claim:local-only` — 2 passed
+- `@claim:offline-reload` — 2 passed
+- `@claim:destination-inputs` — 2 passed
+- `@claim:path-and-size` — 2 passed
+- `@claim:json-csv-export` — 2 passed
+- `@claim:free-access` — 2 passed
+- `@claim:network-boundary` — 2 passed
+
+### Performance and structural checks
+
+Lighthouse 12.8.2 against the production build on a local static server:
+
+- Performance: 99
+- Accessibility: 100
+- Best Practices: 100
+- SEO: 100
+- FCP: 1.7 s
+- LCP: 2.0 s
+- TBT: 0 ms
+- CLS: 0
+
+`verify-url.sh` returned title, `lang=en`, one h1, a main landmark, zero missing alt attributes, zero unlabeled buttons, and zero console errors. Local measured load time was 601 ms.
+
+### Live deployment
+
+- `/`: 200
+- `/demo`: 200
+- `/privacy/`: 200
+- `/terms/`: 200
+- `/no-such-route`: 404
+- `/favicon.ico`: 200
+- `/social-card.webp`: 200
+- Live `/demo`: title `Demo — Android Backup Coverage`, persistent banner visible, 50% result, four rows, 0 px horizontal overflow.
+- Live mobile Axe: zero serious or critical findings; console/page errors: zero.
+- Live headers include the same-origin CSP, HSTS, nosniff, frame denial, referrer policy, and permissions policy.
+
+Evidence files are in `.factory/evidence/local/` and `.factory/evidence/live/` in the worker workspace.
+
+## Known limits and next steps
+
+There are no known release-blocking gaps.
+
+- Verification compares normalized relative paths and byte sizes, not file-content hashes.
+- Browser and Android scoped-storage rules determine which folders a user can open.
+- The checked-in Capacitor project remains the required Android skeleton. APK signing and publication belong to a later Android work order.
+- The prior paid tier is intentionally absent until a working Sociobot billing product exists.
