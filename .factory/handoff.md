@@ -1,4 +1,28 @@
-# Android Backup Coverage — verification handoff
+# Review handoff — Android Backup Coverage
+
+## Completed
+
+Performed the requested adversarial first-read review of the deployed product without changing product code. The full report is in [review-1.md](review-1.md).
+
+Committed review artifacts only:
+
+- `.factory/review-1.md`
+- `.factory/handoff.md`
+
+## How verified
+
+- Fresh Chromium contexts at 390 × 844 and 1440 × 900, before scrolling.
+- Checked `/demo`, `?demo=1`, preview persistence after reload, first-run requests, metadata, route responses, link destinations, and Privacy/Terms console output.
+- Ran `npm ci`, `npm test` (8 Vitest + 14 Playwright passing), and `npm run build`.
+- Checked `.factory/claims.json`; it is absent, so there were no listed claim commands to execute.
+
+## Result and remaining work
+
+**FAIL.** Release-blocking findings are: no isolated one-click demo, no claims registry/tests, a 404 checkout link, and no designed HTTP 404 route. Privacy/Terms also violate the deployed CSP through inline styles and lack the shared skeleton. The report contains exact evidence and retest requirements.
+
+---
+
+## Historical verification record (superseded by review 1)
 
 ## Release status
 
