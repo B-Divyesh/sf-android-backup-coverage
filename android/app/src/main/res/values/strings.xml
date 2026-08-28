@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Backup Coverage</string>
+    <string name="title_activity_main">Backup Coverage</string>
+    <string name="package_name">in.sociobot.androidbackupcoverage</string>
+    <string name="custom_url_scheme">in.sociobot.androidbackupcoverage</string>
+</resources>
