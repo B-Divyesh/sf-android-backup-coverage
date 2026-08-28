@@ -28,7 +28,7 @@ npm test
 npm run build
 ```
 
-`npm test` runs Vitest comparison tests and Playwright checks in desktop Chromium and a 390 px Android viewport, including axe accessibility and offline coverage. `npm run build` is the deployment command and writes the static site to `dist/`, with `dist/index.html` at its root.
+`npm test` runs Vitest comparison tests and builds the app before Playwright checks in desktop Chromium and a 390 px Android viewport, including axe accessibility and offline coverage. It therefore passes from a fresh checkout without a pre-existing `dist/`. `npm run build` is the deployment command and writes the static site to `dist/`, with `dist/index.html` at its root.
 
 Preview the production output with:
 
@@ -67,7 +67,7 @@ The current work order is a static PWA deployment; signing and publishing an APK
 
 ## Deployment
 
-Deploy the contents of `dist/` as a static site with the included `/privacy/`, `/terms/`, and `/offline.html` documents. Use long-lived immutable caching for files under `dist/assets/`; do not permanently cache `index.html` or `sw.js` at the edge because the service worker manages application versions.
+Deploy the contents of `dist/` as a static site with the included `/privacy/`, `/terms/`, and `/offline.html` documents. `staticwebapp.config.json` is included in `dist/` and configures Azure Static Web Apps with long-lived immutable caching for fingerprinted `assets/`, short-lived HTML/service-worker responses, manifest MIME type, and response security policies. Do not override those cache rules at the edge.
 
 ## License
 

@@ -1,28 +1,16 @@
-# Android Backup Coverage — verification handoff (FAIL)
+# Android Backup Coverage — repair handoff
 
-## Verification status
+## Release status
 
-**FAIL — candidate `16c3ddc49cda76cf09a2746947175848cfd3109f` at <https://android-backup-coverage.sociobot.in/> is live and functionally sound, but it does not pass the clean-checkout test gate or required static cache policy.** See [.factory/verification.md](verification.md) for complete evidence.
+**PASS — repair commit `124d11f` is pushed to `main` and deployed to <https://android-backup-coverage.sociobot.in/>.** It repairs every release blocker in the independent report for candidate `16c3ddc49cda76cf09a2746947175848cfd3109f`.
 
-Required before release acceptance:
+## What changed
 
-- Make `npm test` build the app or otherwise work with no pre-existing `dist/`; fresh `npm ci && npm test` currently has 8 failed Playwright tests.
-- Deploy fingerprinted static JS/CSS with a long-lived immutable cache policy. The live app currently serves its app assets with `max-age=30, must-revalidate`.
-- Add CSP, clickjacking, and Permissions-Policy response headers; serve the manifest as `application/manifest+json`.
-
-## What shipped
-
-- A production Vite + TypeScript PWA that inventories user-selected source and destination folders, with file-picker fallbacks for browsers without the File System Access API.
-- Destination-manifest import and portable receipt export in JSON and CSV.
-- File-by-file results for verified, waiting, late, and size-changed files, plus coverage percentage, accessible filtering, and a plain-language summary.
-- User-configurable arrival windows and persistent visible check reminders.
-- IndexedDB persistence for manifests, preferences, current receipt, and history; local reset with confirmation.
-- Offline-capable app shell with versioned caches, navigation fallback, and an in-app update notice.
-- Install manifest, original icons, maskable icon, launch artwork, light/dark treatments, mobile layout, and reduced-motion behavior.
-- A $12 one-time Pro unlock through the Sociobot checkout/verify contract, including URL-token capture, daily verification caching, optimistic offline access, and paste-to-restore. The free tier retains three receipts and includes every check, reminder, export, and accessibility feature.
-- Dedicated `/privacy/` and `/terms/` pages.
-- A generated and reviewed glacial-ceramic hero illustration. Source, prompt metadata, and optimized 56 KB WebP are committed under `assets/src/` and `public/assets/`.
-- A Capacitor Android project skeleton using `in.sociobot.androidbackupcoverage`, with product icons/splashes, day/night support, no broad storage permission, and Android backup disabled for local manifest privacy.
+- `npm test` is self-contained: Playwright builds before starting `vite preview`, so a fresh checkout does not need a pre-existing `dist/` directory.
+- Vite emits content-fingerprinted app JavaScript, CSS, and hero artwork. The generated service worker carries a per-build cache version, discovers emitted asset paths from the built HTML, and preserves offline/update behavior.
+- `public/staticwebapp.config.json` is the Azure Static Web Apps deployment contract: fingerprinted `/assets/*` receive `Cache-Control: public, max-age=31536000, immutable`; HTML and `sw.js` receive `no-cache`; the manifest is `application/manifest+json`.
+- The deployment contract supplies same-origin CSP (including the optional Sociobot license-verification endpoint), `frame-ancestors 'none'`, `X-Frame-Options: DENY`, Permissions-Policy, nosniff, and strict referrer policy.
+- Regression coverage checks the static-host policy contract, emitted hashed JS/CSS/image URLs, service-worker output, and keyboard skip-link/Pro-dialog behavior. Existing comparison, mobile, offline, console, and axe checks remain.
 
 ## Run and verify
 
@@ -30,25 +18,27 @@ Required before release acceptance:
 npm ci
 npm test
 npm run build
-npm run preview
+npx cap sync android
 ```
 
-The deployment command is exactly `npm run build`; static output lands in `dist/` with `dist/index.html` at its root. Refresh the native wrapper after web changes with `npx cap sync android`.
+Completed on 2026-08-28:
 
-Builder-reported verification (superseded by the independent FAIL above) completed on 2026-08-28:
+- Fresh `npm ci`: 150 packages installed; `npm audit` reported 0 vulnerabilities.
+- With `dist/` deliberately moved aside, `npm test` passed: 8 Vitest tests and 14 Playwright tests (desktop Chromium and Pixel 5 / 390 px). This directly closes the clean-checkout blocker.
+- `npm run build` passed TypeScript checking and produced `dist/`: app JS 14.65 KB, CSS 15.32 KB, and the fingerprinted WebP hero 56.80 KB. Initial JS remains below the 200 KB budget.
+- `npx cap sync android` passed. `./android/gradlew -p android test` cannot run in this static-worker image because no JDK/`JAVA_HOME` is installed; no APK is in scope for this static deployment.
+- Local Playwright covers source/destination comparison, filtering, 390 px overflow, service-worker-controlled offline reload, keyboard skip link and Escape/focus return from Pro, and axe serious/critical findings.
+- Live post-deploy check (`/opt/fleet/lib/verify-url.sh`) returned HTTP 200 in 697 ms with title, `lang`, one `h1`, `main`, image alt text, labelled buttons, and no browser errors.
+- Live Playwright/axe at 1440 px and 390 px: 0 serious/critical violations, 0 px horizontal overflow, no console/page errors; after one online load, offline reload reached `data-ready=true` and showed the offline notice. First-load requests were only to `https://android-backup-coverage.sociobot.in`.
+- Live headers confirm `no-cache` on HTML and `sw.js`, immutable one-year caching on `/assets/app-DgoAUnXe.js`, `application/manifest+json` for `/manifest.webmanifest`, plus CSP, `X-Frame-Options: DENY`, Permissions-Policy, nosniff, and strict referrer policy.
+- Live artifact identities match `dist/`: `index.html` `ac3efcfc…8803ce3`, app JS `4addc5a2…7823bb40`, app CSS `17b8d01a…ac5b730`, and `sw.js` `8b5a31b8…8305e9cbf`.
+- Lighthouse 12.8.2 report: Performance 100, Accessibility 100, Best Practices 100, SEO 100; FCP 1.2 s, LCP 1.5 s, TBT 10 ms, CLS 0.023. The JSON report was written successfully, then the supplied Chromium tab emitted a screenshot/BFCache crash during final teardown; treat the scores as report evidence rather than a fully clean Lighthouse process exit.
 
-- `npm test`: 6 Vitest unit tests and 10 Playwright tests passed across desktop Chromium and Pixel 5 emulation.
-- Playwright covers the real file-selection comparison path, receipt filtering, 390 px overflow, offline reload using `context.setOffline(true)`, console errors, and axe serious/critical findings.
-- `/opt/fleet/lib/verify-url.sh`: HTTP 200, valid title and language, one `h1`, main landmark, all image alt text present, no unlabeled buttons, no console errors; measured load 614 ms locally.
-- Lighthouse 12.8.2 mobile: Performance 99, Accessibility 100, Best Practices 100, SEO 100; FCP 1.4 s, LCP 1.8 s, TBT 0 ms, CLS 0.023.
-- Production asset sizes: 14.7 KB JavaScript, 15.3 KB CSS, 56.8 KB hero WebP. Fonts requested for the Latin page total 61.4 KB WOFF2.
-- `npm audit`: 0 vulnerabilities.
-- `npx cap sync android`: passed.
+Deployment used `/opt/fleet/lib/deploy-static.sh android-backup-coverage dist` (Azure Static Web Apps deployment `028cfa9f-b621-486c-a2e1-ef909be6a532`).
 
-## Known limits and next steps
+## Product scope and known limits
 
-- Verification intentionally compares normalized relative paths and byte sizes, not file-content hashes. This keeps large phone libraries fast and avoids reading entire file contents, but it is not cryptographic integrity proof.
-- Android scoped storage controls what the browser picker can expose. The product cannot and does not inspect app-private data.
-- Reminders are visible when the app is opened; this PWA does not request notification permission or claim reliable background execution.
-- The checked-in Android project is a wrapper skeleton because this work order deploys `dist/` as a static product. A later Android artifact work order should add a native Storage Access Framework bridge, build/sign the APK, and publish its SHA-256.
-- The factory must register `android-backup-coverage` with the Sociobot billing API before checkout can complete in production. No product ID or secret is hardcoded.
+- The product compares normalized relative paths and byte sizes, not file-content hashes. It does not claim cryptographic integrity or create a backup.
+- Android/browser scoped storage limits what a picker can reveal; app-private data is never read. Visible reminders require opening the app and do not claim background notification delivery.
+- The checked-in Capacitor project remains a wrapper skeleton for this static-PWA work order. A later Android artifact work order needs a JDK, a Storage Access Framework bridge if desired, signing, APK build, and artifact publication.
+- The factory must register the Sociobot billing product before production checkout can complete. No billing credential or third-party tracking is embedded in the app.
