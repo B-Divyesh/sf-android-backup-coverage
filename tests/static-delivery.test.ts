@@ -34,4 +34,12 @@ describe('Azure Static Web Apps delivery contract', () => {
     expect(shellRoute?.headers?.['Cache-Control']).toBe('no-cache');
     expect(workerRoute?.headers?.['Cache-Control']).toBe('no-cache');
   });
+
+  it('keeps the visual system free of gradients', () => {
+    const styles = [
+      readFileSync(resolve(process.cwd(), 'src/styles.css'), 'utf8'),
+      readFileSync(resolve(process.cwd(), 'public/legal.css'), 'utf8'),
+    ].join('\n');
+    expect(styles).not.toMatch(/(?:linear|radial|conic)-gradient\(/);
+  });
 });

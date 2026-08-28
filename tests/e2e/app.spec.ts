@@ -78,6 +78,19 @@ test('loads every public route without console or serious accessibility errors',
   expect(missingResults.violations.filter((item) => ['serious', 'critical'].includes(item.impact ?? ''))).toEqual([]);
 });
 
+test('keeps dark mode accessible and removes motion when requested', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'dark', reducedMotion: 'reduce' });
+  await page.goto('/');
+  const results = await new AxeBuilder({ page }).analyze();
+  expect(results.violations.filter((item) => ['serious', 'critical'].includes(item.impact ?? ''))).toEqual([]);
+  const timing = await page.locator('.proof-stage').evaluate((element) => {
+    const style = getComputedStyle(element);
+    return { animationDuration: style.animationDuration, transitionDuration: style.transitionDuration };
+  });
+  expect(Number.parseFloat(timing.animationDuration)).toBeLessThanOrEqual(.001);
+  expect(Number.parseFloat(timing.transitionDuration)).toBeLessThanOrEqual(.001);
+});
+
 test('keeps dialog focus and controls keyboard-operable', async ({ page }) => {
   await page.goto('/');
   const trigger = page.getByRole('button', { name: 'History' });
