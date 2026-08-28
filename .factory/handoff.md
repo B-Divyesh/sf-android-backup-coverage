@@ -1,4 +1,14 @@
-# Android Backup Coverage — build handoff
+# Android Backup Coverage — verification handoff (FAIL)
+
+## Verification status
+
+**FAIL — candidate `16c3ddc49cda76cf09a2746947175848cfd3109f` at <https://android-backup-coverage.sociobot.in/> is live and functionally sound, but it does not pass the clean-checkout test gate or required static cache policy.** See [.factory/verification.md](verification.md) for complete evidence.
+
+Required before release acceptance:
+
+- Make `npm test` build the app or otherwise work with no pre-existing `dist/`; fresh `npm ci && npm test` currently has 8 failed Playwright tests.
+- Deploy fingerprinted static JS/CSS with a long-lived immutable cache policy. The live app currently serves its app assets with `max-age=30, must-revalidate`.
+- Add CSP, clickjacking, and Permissions-Policy response headers; serve the manifest as `application/manifest+json`.
 
 ## What shipped
 
@@ -25,7 +35,7 @@ npm run preview
 
 The deployment command is exactly `npm run build`; static output lands in `dist/` with `dist/index.html` at its root. Refresh the native wrapper after web changes with `npx cap sync android`.
 
-Verification completed on 2026-08-28:
+Builder-reported verification (superseded by the independent FAIL above) completed on 2026-08-28:
 
 - `npm test`: 6 Vitest unit tests and 10 Playwright tests passed across desktop Chromium and Pixel 5 emulation.
 - Playwright covers the real file-selection comparison path, receipt filtering, 390 px overflow, offline reload using `context.setOffline(true)`, console errors, and axe serious/critical findings.
