@@ -1,7 +1,7 @@
 {
   "name": "Android Backup Coverage",
   "short_name": "Coverage",
-  "description": "Local, destination-neutral proof that selected Android folders reached a second copy.",
+  "description": "Verify that Android photos and videos reached a second backup copy, with a clear local receipt.",
   "id": "/",
   "start_url": "/?v=1",
   "scope": "/",
@@ -15,6 +15,7 @@
     { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
-    { "name": "Check coverage", "short_name": "Check", "url": "/?v=1#verify", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] }
+    { "name": "Check folders", "short_name": "Check", "url": "/?v=2#verify", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Try sample data", "short_name": "Demo", "url": "/demo", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] }
   ]
 }

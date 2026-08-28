@@ -10,7 +10,7 @@ const RUNTIME_CACHE = `${VERSION}-runtime`;
 const APP_SHELL = [
   '/', '/index.html', '/offline.html', '/manifest.webmanifest',
   '/icons/icon.svg', '/icons/icon-192.png', '/icons/icon-512.png', '/icons/icon-maskable-512.png',
-  '/privacy/', '/terms/',
+  '/icons/apple-touch-icon.png', '/social-card.webp', '/legal.css', '/privacy/', '/terms/', '/demo', '/404.html',
 ];
 
 async function precacheAppShell() {
@@ -49,7 +49,7 @@ worker.addEventListener('fetch', (event) => {
         void caches.open(RUNTIME_CACHE).then((cache) => cache.put(event.request, copy));
         return response;
       })
-      .catch(async () => await caches.match(event.request, { ignoreVary: true }) || await caches.match('/', { ignoreVary: true }) || caches.match('/offline.html')));
+      .catch(async () => await caches.match(event.request, { ignoreVary: true }) || caches.match('/offline.html')));
     return;
   }
 

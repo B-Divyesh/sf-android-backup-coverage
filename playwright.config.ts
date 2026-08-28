@@ -11,7 +11,7 @@ export default defineConfig({
   webServer: {
     // A browser test must be runnable from a fresh checkout. `vite preview`
     // serves an empty shell when dist/ has not already been built.
-    command: 'npm run build && npm run preview',
+    command: 'npm run build && npm run preview:test',
     port: 4173,
     reuseExistingServer: true,
   },

@@ -1,0 +1,79 @@
+[
+  {
+    "id": "compare-folders",
+    "claim": "Compare a phone folder with a backup copy.",
+    "where": "landing page and README",
+    "test": "npm test -- --grep @claim:compare-folders",
+    "sandbox": "fresh /demo context; assert the seeded phone and backup labels and all four compared paths"
+  },
+  {
+    "id": "complete-receipt",
+    "claim": "Know every photo and video made it by accounting for every selected file in the backup receipt.",
+    "where": "landing headline and result preview",
+    "test": "npm test -- --grep @claim:complete-receipt",
+    "sandbox": "fresh /demo context; assert every one of the four selected sample files appears once in the receipt and metric totals equal four"
+  },
+  {
+    "id": "receipt-statuses",
+    "claim": "See what matches, changed, or is missing.",
+    "where": "first screen, backup result, and README",
+    "test": "npm test -- --grep @claim:receipt-statuses",
+    "sandbox": "fresh /demo context; assert two matches, one changed file, one missing file, and 50%"
+  },
+  {
+    "id": "demo-isolation",
+    "claim": "The sample demo does not read or change real saved checks.",
+    "where": "demo banner, Privacy, README, and demo documentation",
+    "test": "npm test -- --grep @claim:demo-isolation",
+    "sandbox": "seed a sentinel in the real IndexedDB; enter and reset /demo; assert demo: storage and unchanged sentinel; leave and assert demo state cleared"
+  },
+  {
+    "id": "local-only",
+    "claim": "Runs entirely in your browser. Files stay on your device.",
+    "where": "first-screen trust line, privacy section, Privacy, and README",
+    "test": "npm test -- --grep @claim:local-only",
+    "sandbox": "intercept the complete /demo flow; assert only same-origin GET requests with no sample file data in a request body"
+  },
+  {
+    "id": "offline-reload",
+    "claim": "Works offline after the first visit.",
+    "where": "first screen and README",
+    "test": "npm test -- --grep @claim:offline-reload",
+    "sandbox": "fresh /demo context; wait for service-worker control, go offline, reload, reset, and recreate the 50% result"
+  },
+  {
+    "id": "destination-inputs",
+    "claim": "Use a backup folder your browser can open, or import its JSON file list.",
+    "where": "backup-copy step, scope section, and README",
+    "test": "npm test -- --grep @claim:destination-inputs",
+    "sandbox": "fresh context; exercise both folder file input and JSON file-list input and assert usable destination state"
+  },
+  {
+    "id": "path-and-size",
+    "claim": "A match has the same relative path and file size.",
+    "where": "comparison explanation, scope section, Terms, and README",
+    "test": "npm test -- --grep @claim:path-and-size",
+    "sandbox": "fresh /demo context; assert equal path/size is matched while equal path/different size is changed"
+  },
+  {
+    "id": "json-csv-export",
+    "claim": "Export a backup check as JSON or CSV.",
+    "where": "result toolbar, Privacy, and README",
+    "test": "npm test -- --grep @claim:json-csv-export",
+    "sandbox": "fresh /demo context; download both formats and assert four records plus headers/schema"
+  },
+  {
+    "id": "free-access",
+    "claim": "Free. No account needed.",
+    "where": "first screen, Terms, and README",
+    "test": "npm test -- --grep @claim:free-access",
+    "sandbox": "fresh contexts; assert the complete demo and real folder inputs are available without sign-in, checkout, or paid controls"
+  },
+  {
+    "id": "network-boundary",
+    "claim": "The app uses no analytics, tracking, account, payment, or data API.",
+    "where": "Privacy and README",
+    "test": "npm test -- --grep @claim:network-boundary",
+    "sandbox": "capture the full demo, legal, reset, and export flows; assert every runtime request is same-origin"
+  }
+]

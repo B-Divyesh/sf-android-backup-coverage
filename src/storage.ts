@@ -12,18 +12,19 @@ export type StoredState = {
   history: Receipt[];
 };
 
-const DB_NAME = 'backup-coverage-local';
+export const REAL_DB_NAME = 'backup-coverage-local';
+export const DEMO_DB_NAME = 'demo:backup-coverage-local';
 const STORE = 'state';
 
-const openDb = () => new Promise<IDBDatabase>((resolve, reject) => {
-  const request = indexedDB.open(DB_NAME, 1);
+const openDb = (demo = false) => new Promise<IDBDatabase>((resolve, reject) => {
+  const request = indexedDB.open(demo ? DEMO_DB_NAME : REAL_DB_NAME, 1);
   request.onupgradeneeded = () => request.result.createObjectStore(STORE);
   request.onsuccess = () => resolve(request.result);
   request.onerror = () => reject(request.error);
 });
 
-export async function loadState(): Promise<StoredState | undefined> {
-  const db = await openDb();
+export async function loadState(demo = false): Promise<StoredState | undefined> {
+  const db = await openDb(demo);
   return new Promise((resolve, reject) => {
     const request = db.transaction(STORE).objectStore(STORE).get('app');
     request.onsuccess = () => resolve(request.result as StoredState | undefined);
@@ -31,8 +32,8 @@ export async function loadState(): Promise<StoredState | undefined> {
   });
 }
 
-export async function saveState(state: StoredState) {
-  const db = await openDb();
+export async function saveState(state: StoredState, demo = false) {
+  const db = await openDb(demo);
   return new Promise<void>((resolve, reject) => {
     const transaction = db.transaction(STORE, 'readwrite');
     transaction.objectStore(STORE).put(state, 'app');
@@ -41,8 +42,8 @@ export async function saveState(state: StoredState) {
   });
 }
 
-export async function clearState() {
-  const db = await openDb();
+export async function clearState(demo = false) {
+  const db = await openDb(demo);
   return new Promise<void>((resolve, reject) => {
     const transaction = db.transaction(STORE, 'readwrite');
     transaction.objectStore(STORE).clear();

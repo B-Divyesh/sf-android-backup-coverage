@@ -32,10 +32,15 @@ Spacing is an 8 px rhythm with 4 px optical adjustments: `4, 8, 12, 16, 24, 32, 
 - Coverage is expressed as one large percentage, a segmented mineral bar, and a plain-language receipt. Tables collapse to stacked labeled records at 390 px.
 - Selecting a directory immediately shows scanning progress and then a receipt. File contents never leave the device.
 - Destructive reset requires a named confirmation; reversible row filtering does not.
+- The campaign first screen pairs the ceramic transfer scene with a three-stage path: phone folder, local comparison, and backup receipt.
+- A compact receipt preview uses the same percentage, status colors, and ruled metrics as the working checker, so the promise and product remain visually continuous.
+- Flow symbols use Lucide's open-source `FolderOpen`, `ScanSearch`, `ReceiptText`, and `ArrowRight` icons. Buttons remain text-led because their labels are already unambiguous.
 
 ## Motion policy
 
 Transitions last 180–240 ms and only move opacity or transform: panels settle upward by 6 px, the coverage marker slides to its measured position, and notices enter from their edge. No decorative loops. With `prefers-reduced-motion: reduce`, transform and smooth-scroll motion are removed and state changes use instant opacity.
+
+The landing introduction reveals once with an 8 px upward settle. The sample coverage bar fills once after entry. Neither animation loops, and reduced-motion collapses both to an immediate state.
 
 ## Original asset plan and provenance
 
@@ -53,3 +58,5 @@ The hero uses one generated still-life illustration rather than a generic dashbo
 - **Negative list:** no people, no hands, no text, no letters, no numbers, no logos, no brand marks, no watermark, no cables, no clouds, no generic shield/checkmark, no glossy plastic, no neon gradient
 
 Generated with the factory Azure image model (`factory-image`) on 2026-08-27 using `/opt/fleet/lib/gen-image.sh`. The output is original for this product; generated imagery is disclosed in the footer. Source PNG and prompt sidecar live in `assets/src/`; the optimized WebP in `src/assets/` is emitted with a content fingerprint, making it safe for immutable caching.
+
+The 1200×630 social preview in `public/social-card.webp` is a centered crop of that original generated still life. It was composed locally with ImageMagick on 2026-08-28; no new source imagery or text was added.
