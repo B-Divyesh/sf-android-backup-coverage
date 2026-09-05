@@ -48,6 +48,7 @@ npx cap sync android
 - `npm test`: 12 Vitest checks and 50 browser checks passed.
 - `npm run build`: passed and wrote `dist/`.
 - `npx cap sync android`: passed.
+- `/opt/fleet/lib/verify-url.sh https://android-backup-coverage.sociobot.in <evidence-dir>` passed: HTTPS 200, title, `lang="en"`, one `h1`, `main`, image alt text, button labels, and zero browser errors.
 - Every exact command in `.factory/claims.json` passed in both Chromium projects:
   `compare-folders`, `complete-receipt`, `receipt-statuses`, `demo-isolation`,
   `local-only`, `offline-reload`, `destination-inputs`, `path-and-size`,
@@ -71,6 +72,7 @@ npx cap sync android
 - The live demo opened directly at 50% with four file rows and the persistent sample label. **Reset demo** restored that result. A sentinel in real IndexedDB stayed unchanged, and demo state was empty after **Start a real backup check**.
 - After a controlled first load, the live phone demo reloaded offline with the 50% receipt and offline notice visible.
 - Live header checks show the supported Permissions-Policy without `ambient-light-sensor`.
+- Fingerprinted JS and CSS have `public, max-age=31536000, immutable`; `sw.js` and the manifest have `no-cache`.
 - SHA-256 checks matched the deployed `index.html`, hashed app JS, hashed CSS, `sw.js`, and `offline.html` to the local `abe2cb2` build.
 
 ## Earlier finding disposition
