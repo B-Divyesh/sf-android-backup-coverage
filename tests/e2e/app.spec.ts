@@ -223,6 +223,17 @@ test('@claim:offline-reload reloads and resets the sample check offline', async 
   await expect(page.locator('#coverage-percent')).toHaveText('50%');
 });
 
+test('announces and applies a waiting service-worker update', async ({ page }) => {
+  await page.goto('/');
+  await page.waitForFunction(() => navigator.serviceWorker?.controller !== null);
+  await page.reload();
+  await page.evaluate(async () => await navigator.serviceWorker.register(`/sw.js?update-test=${Date.now()}`, { scope: '/' }));
+  await expect(page.locator('#update-toast')).toBeVisible();
+  await page.getByRole('button', { name: 'Reload now' }).click();
+  await expect(page.locator('body')).toHaveAttribute('data-ready', 'true');
+  await expect(page.locator('#update-toast')).toBeHidden();
+});
+
 test('@claim:destination-inputs accepts both a backup folder and a JSON file list', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('body')).toHaveAttribute('data-ready', 'true');
