@@ -20,7 +20,7 @@ A match has the same relative path and file size. The app does not create a back
 
 Runs entirely in your browser. Files stay on your device. The app uses no analytics, tracking, account, payment, or data API. Free. No account needed.
 
-The sample demo does not read or change real saved checks. Demo data uses a separate IndexedDB database named `demo:backup-coverage-local`. Reset restores four sample files. Starting for real clears the demo data.
+The sample demo does not read or change real saved checks. Demo data uses a separate IndexedDB database named `demo:backup-coverage-local`. Reset restores four sample files. Starting a real backup check clears the demo data.
 
 Works offline after the first visit. Open `/demo` online once, then reload it without a connection.
 

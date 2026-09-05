@@ -17,6 +17,7 @@ describe('Azure Static Web Apps delivery contract', () => {
     expect(headers['Content-Security-Policy']).not.toContain('api.sociobot.in');
     expect(headers['X-Frame-Options']).toBe('DENY');
     expect(headers['Permissions-Policy']).toContain('camera=()');
+    expect(headers['Permissions-Policy']).not.toContain('ambient-light-sensor');
     expect(headers['X-Content-Type-Options']).toBe('nosniff');
     expect(deployment.mimeTypes['.webmanifest']).toBe('application/manifest+json');
   });

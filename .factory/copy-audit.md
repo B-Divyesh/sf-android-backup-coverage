@@ -1,12 +1,12 @@
 # Copy audit
 
-Audited 2026-08-28. Counts use whitespace-separated words. Labels and button fragments are excluded unless they form a sentence.
+Audited 2026-09-05. Counts use whitespace-separated words. Labels and button fragments are excluded unless they form a sentence.
 
 | Words | Landing sentence |
 |---:|---|
 | 7 | Demo — sample data, nothing is saved. |
 | 7 | Know every photo and video made it. |
-| 22 | For Android photo and video backup users who need clear, local proof that their files actually made it to a second copy. |
+| 18 | For Android photo and video backup users who need clear proof that their files reached a backup copy. |
 | 4 | Preview four sample photos. |
 | 3 | Free, no account. |
 | 5 | Runs entirely in your browser. |

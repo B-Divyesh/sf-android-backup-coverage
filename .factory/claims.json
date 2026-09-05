@@ -70,6 +70,34 @@
     "sandbox": "fresh contexts; assert the complete demo and real folder inputs are available without sign-in, checkout, or paid controls"
   },
   {
+    "id": "reminder-schedule",
+    "claim": "Your next check is scheduled after the first result.",
+    "where": "backup-check reminder control",
+    "test": "npm test -- --grep @claim:reminder-schedule",
+    "sandbox": "fresh context; select fixture folders and a three-day reminder, run a check, and assert the visible next-check date is exactly three days later"
+  },
+  {
+    "id": "does-not-back-up",
+    "claim": "The app does not create a backup.",
+    "where": "README and Terms",
+    "test": "npm test -- --grep @claim:does-not-back-up",
+    "sandbox": "fresh context; compare shipped source and backup fixtures, assert the backup fixture bytes stay unchanged, and capture no write or data request"
+  },
+  {
+    "id": "all-free-features",
+    "claim": "All checks, saved history, reminders, and exports are available without an account.",
+    "where": "Terms",
+    "test": "npm test -- --grep @claim:all-free-features",
+    "sandbox": "fresh /demo context; view a saved check, set a reminder, open saved history, and export JSON and CSV without account, checkout, or paid controls"
+  },
+  {
+    "id": "erase-local-data",
+    "claim": "Erase local data removes saved folder details and checks.",
+    "where": "Privacy and footer",
+    "test": "npm test -- --grep @claim:erase-local-data",
+    "sandbox": "fresh real context; make a fixture check, confirm Erase local data, and assert selections, receipt, and saved history are cleared"
+  },
+  {
     "id": "network-boundary",
     "claim": "The app uses no analytics, tracking, account, payment, or data API.",
     "where": "Privacy and README",

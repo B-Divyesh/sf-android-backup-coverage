@@ -6,6 +6,6 @@
 - Result: two matches, one changed size, one missing file, and 50% coverage.
 - Storage: IndexedDB database `demo:backup-coverage-local`, separate from `backup-coverage-local`.
 - Reset: use **Reset demo** to restore the four seeded files and the 50% result.
-- Exit: use **Start for real** to clear demo state and open the real checker.
+- Exit: use **Start a real backup check** to clear demo state and open the real checker.
 
 The banner remains visible throughout demo mode. Demo actions never read or write the real database.

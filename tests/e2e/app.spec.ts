@@ -12,7 +12,7 @@ async function openDemo(page: Page, path = '/demo') {
 test('loads the checker with clear first-screen wording and keyboard access', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('body')).toHaveAttribute('data-ready', 'true');
-  await expect(page).toHaveTitle('Android Backup Coverage — know every file made it');
+  await expect(page).toHaveTitle('Android Backup Coverage — verify backup copies');
   await expect(page.locator('h1')).toHaveCount(1);
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('Know every photo and video made it.');
   await expect(page.locator('#load-example')).toBeVisible();
@@ -44,10 +44,11 @@ test('serves fingerprinted assets and a versioned service worker', async ({ page
   expect(await worker.text()).toContain('coverage-');
 });
 
-test('uses complete route metadata and returns a designed HTTP 404', async ({ page }) => {
-  for (const route of ['/', '/demo', '/privacy/', '/terms/']) {
+test('uses complete route metadata, shared fallback navigation, and a designed HTTP 404', async ({ page }) => {
+  for (const route of ['/', '/demo', '/privacy/', '/terms/', '/offline.html']) {
     const response = await page.goto(route);
     expect(response?.status()).toBe(200);
+    expect(response?.headers()['permissions-policy']).not.toContain('ambient-light-sensor');
     await expect(page.locator('html')).toHaveAttribute('lang', 'en');
     await expect(page.locator('main')).toHaveCount(1);
     await expect(page.locator('h1')).toHaveCount(1);
@@ -57,6 +58,10 @@ test('uses complete route metadata and returns a designed HTTP 404', async ({ pa
     await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /social-card\.webp$/);
     await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image');
   }
+  await page.goto('/offline.html');
+  await expect(page.getByRole('navigation', { name: 'Primary navigation' })).toContainText('Home');
+  await expect(page.getByRole('navigation', { name: 'Primary navigation' })).toContainText('Demo');
+  await expect(page.getByRole('navigation', { name: 'Primary navigation' })).toContainText('Privacy');
   const missing = await page.goto('/no-such-route');
   expect(missing?.status()).toBe(404);
   await expect(page).toHaveTitle('Page not found — Android Backup Coverage');
@@ -67,7 +72,7 @@ test('uses complete route metadata and returns a designed HTTP 404', async ({ pa
 test('loads every public route without console or serious accessibility errors', async ({ page }) => {
   const errors: string[] = [];
   page.on('console', (message) => { if (message.type() === 'error') errors.push(message.text()); });
-  for (const route of ['/', '/demo', '/privacy/', '/terms/']) {
+  for (const route of ['/', '/demo', '/privacy/', '/terms/', '/offline.html']) {
     await page.goto(route);
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations.filter((item) => ['serious', 'critical'].includes(item.impact ?? '')), route).toEqual([]);
@@ -178,7 +183,7 @@ test('@claim:demo-isolation keeps demo storage separate, resets it, and discards
     });
   });
   expect(realMarker).toBe('real-check');
-  await page.getByRole('link', { name: 'Start for real' }).click();
+  await page.getByRole('link', { name: 'Start a real backup check' }).click();
   await expect(page).toHaveURL(/\/#verify$/);
   const demoState = await page.evaluate(async () => {
     const database = await new Promise<IDBDatabase>((resolve) => {
@@ -259,6 +264,72 @@ test('@claim:free-access exposes complete checks without account, checkout, or p
   await expect(page.getByRole('button', { name: /sign in|buy|pro/i })).toHaveCount(0);
   await openDemo(page);
   await expect(page.getByRole('button', { name: 'Export CSV' })).toBeVisible();
+});
+
+test('@claim:reminder-schedule sets the visible next-check date from the chosen interval', async ({ page }) => {
+  const checkedAt = Date.UTC(2026, 0, 2, 12, 0, 0);
+  await page.addInitScript((timestamp) => { Date.now = () => timestamp; }, checkedAt);
+  await page.goto('/');
+  await expect(page.locator('body')).toHaveAttribute('data-ready', 'true');
+  await page.locator('#source-files').setInputFiles('tests/fixtures/source');
+  await page.locator('#destination-files').setInputFiles('tests/fixtures/destination');
+  await page.locator('#reminder-interval').selectOption('3');
+  await page.getByRole('button', { name: 'Compare both folders' }).click();
+  const expected = await page.evaluate((timestamp) => {
+    const due = timestamp + 3 * 86_400_000;
+    return `Next check: ${new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(due)}.`;
+  }, checkedAt);
+  await expect(page.locator('#reminder-status')).toHaveText(expected);
+});
+
+test('@claim:does-not-back-up leaves the chosen backup fixture unchanged and makes no write request', async ({ page }) => {
+  const backupFixture = 'tests/fixtures/destination/photo-1.jpg';
+  const before = await readFile(backupFixture);
+  const requests: { url: string; method: string; body: string | null }[] = [];
+  page.on('request', (request) => requests.push({ url: request.url(), method: request.method(), body: request.postData() }));
+  await page.goto('/');
+  await expect(page.locator('body')).toHaveAttribute('data-ready', 'true');
+  await page.locator('#source-files').setInputFiles('tests/fixtures/source');
+  await page.locator('#destination-files').setInputFiles('tests/fixtures/destination');
+  await page.getByRole('button', { name: 'Compare both folders' }).click();
+  await expect(page.locator('#receipt')).toBeVisible();
+  expect(await readFile(backupFixture)).toEqual(before);
+  expect(requests.every((request) => new URL(request.url).origin === 'http://127.0.0.1:4173')).toBeTruthy();
+  expect(requests.every((request) => request.method === 'GET' && !request.body)).toBeTruthy();
+});
+
+test('@claim:all-free-features makes checks, history, reminders, and both exports available without an account', async ({ page }) => {
+  const requests: string[] = [];
+  page.on('request', (request) => requests.push(request.url()));
+  await openDemo(page);
+  await page.locator('#reminder-interval').selectOption('7');
+  await expect(page.locator('#reminder-status')).toContainText('Next check:');
+  await page.getByRole('button', { name: 'History' }).click();
+  await expect(page.locator('#history-list .history-item')).toHaveCount(1);
+  await page.keyboard.press('Escape');
+  const [jsonDownload] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Export JSON' }).click()]);
+  const [csvDownload] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'Export CSV' }).click()]);
+  expect(await jsonDownload.suggestedFilename()).toMatch(/\.json$/);
+  expect(await csvDownload.suggestedFilename()).toMatch(/\.csv$/);
+  const controls = await page.locator('a, button').evaluateAll((elements) => elements.map((element) => `${element.textContent} ${(element as HTMLAnchorElement).href ?? ''}`));
+  expect(controls.join(' ')).not.toMatch(/sign in|checkout|paid tier|buy now/i);
+  expect(requests.every((url) => new URL(url).origin === 'http://127.0.0.1:4173')).toBeTruthy();
+});
+
+test('@claim:erase-local-data removes saved selections, receipt, and history after confirmation', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('body')).toHaveAttribute('data-ready', 'true');
+  await page.locator('#source-files').setInputFiles('tests/fixtures/source');
+  await page.locator('#destination-files').setInputFiles('tests/fixtures/destination');
+  await page.getByRole('button', { name: 'Compare both folders' }).click();
+  await expect(page.locator('#receipt')).toBeVisible();
+  page.once('dialog', (dialog) => dialog.accept());
+  await page.getByRole('button', { name: 'Erase local data' }).click();
+  await expect(page.locator('#source-selection')).toHaveText('No phone folder selected');
+  await expect(page.locator('#destination-selection')).toHaveText('No backup copy selected');
+  await expect(page.locator('#receipt')).toBeHidden();
+  await page.getByRole('button', { name: 'History' }).click();
+  await expect(page.getByText('No saved checks yet.')).toBeVisible();
 });
 
 test('@claim:network-boundary keeps product, demo, legal, reset, and export requests same-origin', async ({ page }) => {
