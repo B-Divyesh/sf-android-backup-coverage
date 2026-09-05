@@ -38,7 +38,7 @@ Spacing is an 8 px rhythm with 4 px optical adjustments: `4, 8, 12, 16, 24, 32, 
 
 ## Motion policy
 
-Transitions last 180–240 ms and only move opacity or transform: panels settle upward by 6 px, the coverage marker slides to its measured position, and notices enter from their edge. No decorative loops. With `prefers-reduced-motion: reduce`, transform and smooth-scroll motion are removed and state changes use instant opacity.
+Transitions last 180–240 ms and move with transforms only: panels settle upward by 6 px, the coverage marker slides to its measured position, and notices enter from their edge. Text remains fully opaque throughout, so contrast never drops during motion. No decorative loops. With `prefers-reduced-motion: reduce`, transform and smooth-scroll motion are removed and state changes are instant.
 
 The landing introduction reveals once with an 8 px upward settle. The sample coverage bar fills once after entry. Neither animation loops, and reduced-motion collapses both to an immediate state.
 

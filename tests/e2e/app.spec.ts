@@ -22,6 +22,15 @@ test('loads the checker with clear first-screen wording and keyboard access', as
   await expect(page).toHaveURL(/#main$/);
 });
 
+test('keeps landing copy readable while the entrance motion runs', async ({ page }) => {
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('body')).toHaveAttribute('data-ready', 'true');
+  const opacities = await page.locator('.hero-copy > *').evaluateAll((elements) => elements.map((element) => getComputedStyle(element).opacity));
+  expect(opacities).toEqual(['1', '1', '1', '1', '1', '1']);
+  const results = await new AxeBuilder({ page }).analyze();
+  expect(results.violations.filter((item) => ['serious', 'critical'].includes(item.impact ?? ''))).toEqual([]);
+});
+
 test('shows the three-step story and sample result without desktop scrolling', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');

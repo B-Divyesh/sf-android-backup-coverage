@@ -367,8 +367,8 @@ dialog hr { margin: 26px 0; border: 0; border-top: 1px solid var(--line); }
 .visually-hidden { position: absolute !important; width: 1px !important; height: 1px !important; overflow: hidden !important; clip: rect(0 0 0 0) !important; clip-path: inset(50%) !important; white-space: nowrap !important; }
 [hidden] { display: none !important; }
 
-@keyframes settle { from { opacity: 0; transform: translateY(6px); } }
-@keyframes reveal { from { opacity:0; transform:translateY(8px); } }
+@keyframes settle { from { transform: translateY(6px); } }
+@keyframes reveal { from { transform: translateY(8px); } }
 @keyframes fill-proof { from { transform:scaleX(0); } to { transform:scaleX(1); } }
 
 .hero-copy > * { animation:reveal 420ms ease-out both; }
