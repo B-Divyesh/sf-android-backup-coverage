@@ -21,7 +21,7 @@ All status states pair icon, wording, and color. Focus is a 3 px fjord/ice doubl
 
 ## Type and spacing
 
-The display face uses **Fraunces**, self-hosted variable WOFF2, for the one product heading and important numbers; its softened, cut-serif shapes echo hand-thrown ceramics. Interface copy uses **Atkinson Hyperlegible Next**, self-hosted WOFF2, for robust small-screen recognition. If either font fails, Georgia and system UI are the respective fallbacks. Body text is 16–18 px at 1.55; tabular results use tabular figures.
+The display face uses **Fraunces**, self-hosted variable WOFF2, for the one product heading and important numbers; its softened, cut-serif shapes echo hand-thrown ceramics. Interface copy uses **Atkinson Hyperlegible Next**, self-hosted WOFF2, for robust small-screen recognition. The three Latin font files are preloaded and use `font-display: optional`, so a slow font never swaps after first paint and moves the receipt. If either font misses its first-render window, Georgia and system UI remain as stable fallbacks. Body text is 16–18 px at 1.55; tabular results use tabular figures.
 
 Spacing is an 8 px rhythm with 4 px optical adjustments: `4, 8, 12, 16, 24, 32, 48, 72`. Corners are 10 px for controls, 18–28 px for ceramic surfaces. Thin asymmetrical borders and restrained, low shadows create physical depth.
 

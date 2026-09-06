@@ -1,6 +1,6 @@
 # Copy audit
 
-Audited 2026-09-05. Counts use whitespace-separated words. Labels and button fragments are excluded unless they form a sentence.
+Audited 2026-09-06. Counts use whitespace-separated words. Labels and button fragments are excluded unless they form a sentence.
 
 | Words | Landing sentence |
 |---:|---|
@@ -46,6 +46,15 @@ Audited 2026-09-05. Counts use whitespace-separated words. Labels and button fra
 Variable result sentences range from 3 to 14 words. Date and count substitutions do not create a sentence longer than 22 words.
 
 No sentence exceeds 22 words. No sentence contains a banned marketing word.
+
+## Repair 3 route copy
+
+| Words | Route text | Result |
+|---:|---|---|
+| 2 | Unknown address | Direct 404 label; no metaphor. |
+| 9 | Starting a real backup check clears the demo data. | Matches the tested object-store behavior. |
+
+Neither item contains a banned word. The landing text and terminology did not change in this repair.
 
 ## Terminology
 
