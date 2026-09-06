@@ -22,7 +22,7 @@
   },
   {
     "id": "demo-isolation",
-    "claim": "The sample demo does not read or change real saved checks.",
+    "claim": "The sample demo does not read or change real saved checks, and starting a real backup check clears the demo data.",
     "where": "demo banner, Privacy, README, and demo documentation",
     "test": "npm test -- --grep @claim:demo-isolation",
     "sandbox": "seed a sentinel in the real IndexedDB; enter and reset /demo; assert demo: storage and unchanged sentinel; leave and assert demo state cleared"

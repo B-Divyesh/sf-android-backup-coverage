@@ -9,6 +9,9 @@
     <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="preload" href="./node_modules/@fontsource/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="./node_modules/@fontsource/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="./node_modules/@fontsource-variable/fraunces/files/fraunces-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Android Backup Coverage" />
     <meta property="og:title" content="Android Backup Coverage — verify backup copies" />
@@ -103,8 +106,8 @@
               <p>Choose DCIM, Pictures, or another folder your browser can open.</p>
               <div class="step-actions">
                 <button class="button primary" id="source-pick" type="button">Choose phone folder</button>
-                <label class="button secondary file-label" for="source-files">Choose phone files</label>
-                <input id="source-files" class="visually-hidden" type="file" multiple webkitdirectory aria-label="Choose phone folder files" />
+                <button class="button secondary file-trigger" id="source-files-open" type="button">Choose phone files</button>
+                <input id="source-files" type="file" multiple webkitdirectory aria-label="Choose phone folder files" hidden />
               </div>
               <p class="selection" id="source-selection" aria-live="polite">No phone folder selected</p>
             </div>
@@ -116,10 +119,10 @@
               <p>Choose a backup folder you can open, or import its JSON file list.</p>
               <div class="step-actions">
                 <button class="button primary" id="destination-pick" type="button">Choose backup folder</button>
-                <label class="button secondary file-label" for="destination-files">Choose backup files</label>
-                <label class="button quiet file-label" for="manifest-file">Import file list</label>
-                <input id="destination-files" class="visually-hidden" type="file" multiple webkitdirectory aria-label="Choose backup folder files" />
-                <input id="manifest-file" class="visually-hidden" type="file" accept="application/json,.json" aria-label="Import backup file list" />
+                <button class="button secondary file-trigger" id="destination-files-open" type="button">Choose backup files</button>
+                <button class="button quiet file-trigger" id="manifest-file-open" type="button">Import file list</button>
+                <input id="destination-files" type="file" multiple webkitdirectory aria-label="Choose backup folder files" hidden />
+                <input id="manifest-file" type="file" accept="application/json,.json" aria-label="Import backup file list" hidden />
               </div>
               <p class="selection" id="destination-selection" aria-live="polite">No backup copy selected</p>
             </div>

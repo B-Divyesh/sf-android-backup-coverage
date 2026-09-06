@@ -1,6 +1,30 @@
+@font-face {
+  font-family: "Atkinson Hyperlegible Next Stable";
+  font-style: normal;
+  font-display: optional;
+  font-weight: 400;
+  src: url("../node_modules/@fontsource/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-400-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Atkinson Hyperlegible Next Stable";
+  font-style: normal;
+  font-display: optional;
+  font-weight: 600;
+  src: url("../node_modules/@fontsource/atkinson-hyperlegible-next/files/atkinson-hyperlegible-next-latin-600-normal.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Fraunces Stable";
+  font-style: normal;
+  font-display: optional;
+  font-weight: 100 900;
+  src: url("../node_modules/@fontsource-variable/fraunces/files/fraunces-latin-wght-normal.woff2") format("woff2-variations");
+}
+
 :root {
   color-scheme: light dark;
-  font-family: "Atkinson Hyperlegible Next", system-ui, sans-serif;
+  font-family: "Atkinson Hyperlegible Next Stable", system-ui, sans-serif;
   font-size: 16px;
   --frost: #f7f8f5;
   --surface: #fff;
@@ -16,7 +40,7 @@
   --warning: #805204;
   --danger: #a13d32;
   --shadow: 0 24px 64px rgba(27, 52, 49, .12), 0 2px 8px rgba(27, 52, 49, .06);
-  --display: "Fraunces Variable", Georgia, serif;
+  --display: "Fraunces Stable", Georgia, serif;
 }
 
 * { box-sizing: border-box; }
@@ -100,6 +124,7 @@ button { color: inherit; }
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  min-height: 44px;
   text-decoration: none;
   font-weight: 600;
   letter-spacing: -.01em;
@@ -181,7 +206,7 @@ p { margin-top: 0; }
 .button.quiet { background: transparent; color: var(--fjord); border-color: var(--line); }
 .button.full { width: 100%; }
 .button:disabled { cursor: not-allowed; opacity: .5; transform: none; box-shadow: none; }
-.file-label { cursor: pointer; }
+.file-trigger { cursor: pointer; }
 
 .proof-stage { position:relative; min-height:590px; padding:190px 24px 24px; isolation:isolate; scroll-margin-top:24px; }
 .proof-stage:focus-visible { outline-offset:8px; border-radius:24px; }
@@ -333,7 +358,14 @@ footer {
   font-size: .92rem;
 }
 footer > div { display: flex; flex-wrap: wrap; gap: 8px 20px; }
-footer .text-button { padding: 0; min-height: 24px; }
+footer > div > a, footer > div > .text-button {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 4px;
+}
 .generation-note { grid-column: 1 / -1; font-size: .78rem; }
 
 dialog {

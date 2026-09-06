@@ -1,6 +1,3 @@
-import '@fontsource/atkinson-hyperlegible-next/latin-400.css';
-import '@fontsource/atkinson-hyperlegible-next/latin-600.css';
-import '@fontsource-variable/fraunces/wght.css';
 import { ArrowRight, FolderOpen, ReceiptText, ScanSearch, createIcons } from 'lucide';
 import './styles.css';
 import { humanSize, makeReceipt, type FileRecord, type Receipt } from './coverage';
@@ -318,6 +315,9 @@ async function resetDemo() {
 function bindEvents() {
   $('#source-pick').addEventListener('click', () => chooseDirectory('source'));
   $('#destination-pick').addEventListener('click', () => chooseDirectory('destination'));
+  $('#source-files-open').addEventListener('click', () => $<HTMLInputElement>('#source-files').click());
+  $('#destination-files-open').addEventListener('click', () => $<HTMLInputElement>('#destination-files').click());
+  $('#manifest-file-open').addEventListener('click', () => $<HTMLInputElement>('#manifest-file').click());
   $<HTMLInputElement>('#source-files').addEventListener('change', (event) => acceptFileSelection('source', event.currentTarget as HTMLInputElement));
   $<HTMLInputElement>('#destination-files').addEventListener('change', (event) => acceptFileSelection('destination', event.currentTarget as HTMLInputElement));
   $<HTMLInputElement>('#manifest-file').addEventListener('change', (event) => importManifest(event.currentTarget as HTMLInputElement));

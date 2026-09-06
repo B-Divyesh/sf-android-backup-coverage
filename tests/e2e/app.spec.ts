@@ -117,6 +117,78 @@ test('keeps dialog focus and controls keyboard-operable', async ({ page }) => {
   await expect(trigger).toBeFocused();
 });
 
+test('opens every file import from a visible keyboard-focused control', async ({ page }) => {
+  await page.goto('/');
+  await expect(page.locator('body')).toHaveAttribute('data-ready', 'true');
+
+  const chooseWithKeyboard = async (name: string, files: string) => {
+    const trigger = page.getByRole('button', { name, exact: true });
+    await trigger.focus();
+    await expect(trigger).toBeFocused();
+    const focus = await trigger.evaluate((element) => {
+      const style = getComputedStyle(element);
+      const rect = element.getBoundingClientRect();
+      return { height: rect.height, outlineStyle: style.outlineStyle, outlineWidth: Number.parseFloat(style.outlineWidth) };
+    });
+    expect(focus.height).toBeGreaterThanOrEqual(44);
+    expect(focus.outlineStyle).toBe('solid');
+    expect(focus.outlineWidth).toBeGreaterThanOrEqual(3);
+    const chooserPromise = page.waitForEvent('filechooser');
+    await page.keyboard.press('Enter');
+    const chooser = await chooserPromise;
+    await chooser.setFiles(files);
+  };
+
+  await chooseWithKeyboard('Choose phone files', 'tests/fixtures/source');
+  await expect(page.locator('#source-selection')).toContainText('source · 2 files ready');
+  await chooseWithKeyboard('Choose backup files', 'tests/fixtures/destination');
+  await expect(page.locator('#destination-selection')).toContainText('destination · 1 file ready');
+  await chooseWithKeyboard('Import file list', 'tests/fixtures/backup-list.json');
+  await expect(page.locator('#destination-selection')).toContainText('backup-list.json · 2 files ready');
+});
+
+test('keeps mobile controls at least 44 CSS pixels in both dimensions', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  for (const route of ['/', '/privacy/', '/terms/', '/offline.html', '/missing-touch-target-check']) {
+    await page.goto(route);
+    const undersized = await page.locator('a, button, select').evaluateAll((elements) => elements
+      .filter((element) => {
+        const style = getComputedStyle(element);
+        const rect = element.getBoundingClientRect();
+        return style.display !== 'none' && style.visibility !== 'hidden' && rect.width > 0 && rect.height > 0;
+      })
+      .map((element) => {
+        const rect = element.getBoundingClientRect();
+        return { name: element.getAttribute('aria-label') || element.textContent?.trim(), width: rect.width, height: rect.height };
+      })
+      .filter(({ width, height }) => width < 44 || height < 44));
+    expect(undersized, route).toEqual([]);
+  }
+});
+
+test('keeps cold mobile layout shift below 0.1 while fonts arrive', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.route(/\.woff2$/, async (route) => {
+    await new Promise((resolve) => setTimeout(resolve, 1_500));
+    await route.continue();
+  });
+  await page.addInitScript(() => {
+    const measuredWindow = window as Window & { __layoutShiftScore?: number };
+    measuredWindow.__layoutShiftScore = 0;
+    new PerformanceObserver((list) => {
+      for (const item of list.getEntries()) {
+        const entry = item as PerformanceEntry & { hadRecentInput: boolean; value: number };
+        if (!entry.hadRecentInput) measuredWindow.__layoutShiftScore = (measuredWindow.__layoutShiftScore ?? 0) + entry.value;
+      }
+    }).observe({ type: 'layout-shift', buffered: true });
+  });
+  await page.goto('/', { waitUntil: 'domcontentloaded' });
+  await expect(page.locator('body')).toHaveAttribute('data-ready', 'true');
+  await page.waitForTimeout(1_800);
+  const score = await page.evaluate(() => (window as Window & { __layoutShiftScore?: number }).__layoutShiftScore ?? 0);
+  expect(score).toBeLessThan(0.1);
+});
+
 test('fits the first screen and full page at a 390px viewport', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('/');
@@ -205,6 +277,17 @@ test('@claim:demo-isolation keeps demo storage separate, resets it, and discards
     });
   });
   expect(demoState).toBeNull();
+  const realMarkerAfterExit = await page.evaluate(async () => {
+    const database = await new Promise<IDBDatabase>((resolve) => {
+      const request = indexedDB.open('backup-coverage-local', 1);
+      request.onsuccess = () => resolve(request.result);
+    });
+    return await new Promise<string | undefined>((resolve) => {
+      const request = database.transaction('state').objectStore('state').get('sentinel');
+      request.onsuccess = () => resolve((request.result as { marker?: string })?.marker);
+    });
+  });
+  expect(realMarkerAfterExit).toBe('real-check');
 });
 
 test('@claim:local-only sends no sample file data away from the device', async ({ page }) => {
