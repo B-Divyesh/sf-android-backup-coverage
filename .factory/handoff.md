@@ -57,3 +57,7 @@ All Review 1, Review 2, Verification 1, and Verification 2 repairs listed in `.f
 
 - This work order ships the static PWA and synchronized Capacitor project. APK signing and distribution remain a later Android work order.
 - No paid offer existed in the assigned base, so no billing-offer metadata was created or changed.
+
+## Next steps
+
+Run the independent repair-3 verification against implementation SHA `8b1283537f1e3b44d0ab352a4f68c046c9258213`. Build, sign, and distribute the APK only in the later Android artifact work order.
